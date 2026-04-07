@@ -5,3 +5,6 @@ format:
   html:
    pdf:
 ---
+
+# Introduction
+This report investigates if increased personalised marketing campaign spend per customer leads to higher purchase amounts. Understanding this relationship between marketing spend and customer purchase amounts is crucial for evaluating the effectiveness of investment on marketing efforts. The findings from this report can inform future budget allocations around marketing strategies.
