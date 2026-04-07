@@ -11,3 +11,6 @@ This report investigates if increased personalised marketing campaign spend per 
 
 # Research Question
 This report aims to investigate whether increased marketing spend per customer leads to higher purchase amounts. The relationship between these two variables will be analysed by utilising customer-level data from a personalised marketing campaign, including marketing spend and recorded customer purchase amounts.
+
+# Dataset Introduction
+The dataset records customer-level data from a personalised marketing campaign. The data set consists of amount spent on marketing per customer, the number of times the customer visited the platform, the purchase amounts of each customer and each customers sign-up dates. The customers are classified into segments (Consumer, SMB, Enterprise) to reflect different market types and the notes provides information about each customer's marketing interactions.
