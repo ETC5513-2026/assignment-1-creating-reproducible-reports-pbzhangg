@@ -69,3 +69,16 @@ clean_customer_data %>%
 [@tbl-summary-stats] shows the summary statistics of the numeric variables in the data set. From [@tbl-summary-stats], it appears that the variables, marketing_spend and purchase_amount are highly variable, with ranges spanning from $1.8 to $297 and $0 to $307 respectively, which will allow the analysis to capture the extremes of the relationship between the two variables. The average amount spent on marketing per customer is $148 with most marketing campaigns spending between $74 and $215 and the average customer purchase amount is $135 with most customers spending between $76 and $199. The visits variable shows less variability with a mean of 6.1 and most customers visiting the platform between 4 to 8 times.
 
 [@tbl-summary-stats] provides insights on the distribution of the numeric variables of the data, showing average values, ranges and potential outliers, which can be useful for the interpretation of results later on in the analysis.
+
+```{r}
+#| label: fig-custs-per-segment
+#| fig-cap: "Number of customers in each different segment (Consumer, Enterprise, SMB) in the data"
+
+# Plot the count of customers in each segment as a bar chart
+ggplot(clean_customer_data, aes(x = segment)) +
+    geom_bar() +
+    labs(x = "Segment",
+         y = "Count of Customers",
+         title = "Count of Customers by segment") +
+    theme_minimal()
+```
