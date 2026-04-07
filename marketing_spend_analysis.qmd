@@ -10,6 +10,7 @@ format:
 # Load required libraries
 library(tidyverse)
 library(datefixR)
+library(vtable)
 ```
 
 # Introduction
@@ -54,3 +55,13 @@ The raw data set contained lots of "N/A" and empty null values, these were conve
 
 ## Dataset Description
 The processed data set contains numeric variables (marketing_spend, visits, purchase_amount), categorical variables (segment, notes), a date time variable (signup_date) and a unique character variable (customer_id). There are `r ncol(clean_customer_data)` variables and `r nrow(clean_customer_data)` observations in the cleaned data set.
+
+```{r}
+#| label: tbl-summary-stats
+#| tbl-cap: "Summary statistics of numeric variables (marketing spend, visits, purchase amount) in the data set"
+
+# Get summary statistics of the numeric variables
+clean_customer_data %>%
+    select(marketing_spend, visits, purchase_amount) %>%
+    sumtable(title = NA)
+```
