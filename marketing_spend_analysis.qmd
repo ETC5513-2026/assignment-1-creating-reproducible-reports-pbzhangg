@@ -2,8 +2,8 @@
 title: "Marketing Spend Analysis"
 author: "Phoebe Zhang"
 format: 
-  html:
-   pdf:
+  html: default
+  pdf: default
 ---
 
 ```{r, echo = FALSE, warning = FALSE, message = FALSE}
