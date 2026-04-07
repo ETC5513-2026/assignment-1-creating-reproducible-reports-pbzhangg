@@ -23,7 +23,6 @@ This report aims to investigate whether increased marketing spend per customer l
 # Dataset Introduction
 The dataset records customer-level data from a personalised marketing campaign. The data set consists of amount spent on marketing per customer, the number of times the customer visited the platform, the purchase amounts of each customer and each customers sign-up dates. The customers are classified into segments (Consumer, SMB, Enterprise) to reflect different market types and the notes provides information about each customer's marketing interactions.
 
-
 ```{r, echo = FALSE, include = FALSE}
 # Read in the raw .csv data file
 raw_customer_data <- read.csv("data/37300458_Phoebe Zhang.csv")
@@ -56,7 +55,6 @@ The raw data set contained lots of "N/A" and empty null values, these were conve
 
 ## Dataset Description
 The processed data set contains numeric variables (marketing_spend, visits, purchase_amount), categorical variables (segment, notes), a date time variable (signup_date) and a unique character variable (customer_id). There are `r ncol(clean_customer_data)` variables and `r nrow(clean_customer_data)` observations in the cleaned data set.
-
 ```{r}
 #| label: tbl-summary-stats
 #| tbl-cap: "Summary statistics of numeric variables (marketing spend, visits, purchase amount) in the data set"
@@ -100,3 +98,7 @@ ggplot(clean_customer_data, aes(x = marketing_spend, y = purchase_amount)) +
          title = "Marketing Spend against Customer Purchase Amount" ) +
     theme_minimal()
 ```
+
+[@fig-market-cust-plot] shows that there is a strong positive relationship between marketing spend and customer purchase amount. As marketing spend increases, customer purchase amount also tends to increase. There is some variability in the data shown by the dispersion of the points on the plot, but the overall trend is positive. At lower marketing spend on personalised campaigns, most customers make no purchase or the purchase amount is small. At higher amounts of money spent on personalised marketing campaigns, customer purchases tend to be generally higher. This suggests that higher marketing spend per customer does lead to higher purchase amounts. 
+
+Customers with marketing spend amounts below $50 had an average purchase amount of $`r round(mean(clean_customer_data$purchase_amount[clean_customer_data$purchase_amount < 50]), 2)`, whereas customers with marketing spend amounts above $250 had an average purchase amount of $`r round(mean(clean_customer_data$purchase_amount[clean_customer_data$purchase_amount > 250]), 2)` showing that there is a general upward trend between the two variables. The correlation between marketing spend and customer purchase amount is `r round(cor(clean_customer_data$marketing_spend, clean_customer_data$purchase_amount), 2)`. This correlation coefficient is positive and close to 1, indicating a strong positive relationship between the two variables. These statistics further support the conclusion that higher marketing spend per customer does leads to higher purchase amounts.
