@@ -41,5 +41,10 @@ clean_customer_data <- raw_customer_data %>%
         
          # Convert variables to factor to represent categorical data
         segment = as.factor(segment),
-        notes = as.factor(notes))
+        notes = as.factor(notes)
+        ) %>%
+    # Filter out NA purchase_amounts
+    filter(
+        !is.na(purchase_amount)
+    )
 ```
