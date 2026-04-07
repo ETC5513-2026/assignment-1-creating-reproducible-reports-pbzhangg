@@ -11,6 +11,7 @@ format:
 library(tidyverse)
 library(datefixR)
 library(vtable)
+library(ggplot2)
 ```
 
 # Introduction
@@ -82,3 +83,7 @@ ggplot(clean_customer_data, aes(x = segment)) +
          title = "Count of Customers by segment") +
     theme_minimal()
 ```
+
+[@fig-custs-per-segment] is a bar chart which shows that the observations in this data mostly consists of Consumer customers, where Enterprise customers contribute the least to this data.
+
+[@fig-custs-per-segment] shows how the customers are distributed across the different segments (Consumer, SMB, Enterprise), and provides background on which segments contribute most to this data. This can prove useful later on if the marketing team would like to analyse marketing spend based on each different segment.
