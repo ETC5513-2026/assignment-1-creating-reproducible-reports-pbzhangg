@@ -51,3 +51,6 @@ clean_customer_data <- raw_customer_data %>%
 
 ## Cleaning Process
 The raw data set contained lots of "N/A" and empty null values, these were converted to *NA* to ensure consistency across variables. The raw dataset also contained inconsistent date formats, these were standardised and converted into a consistent date format across all rows. Categorical variables, such as segment and notes, were converted to factor types to properly represent their categorical nature. Rows with missing customer purchase amount data was removed from the data set as unknown purchase amounts would not be useful for this analysis. The cleaning process ensures that the final data set is consistent and complete for meaningful statistical analysis of the relationship between marketing spend and customer purchase amounts.
+
+## Dataset Description
+The processed data set contains numeric variables (marketing_spend, visits, purchase_amount), categorical variables (segment, notes), a date time variable (signup_date) and a unique character variable (customer_id). There are `r ncol(clean_customer_data)` variables and `r nrow(clean_customer_data)` observations in the cleaned data set.
