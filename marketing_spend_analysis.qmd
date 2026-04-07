@@ -22,7 +22,7 @@ This report aims to investigate whether increased marketing spend per customer l
 The dataset records customer-level data from a personalised marketing campaign. The data set consists of amount spent on marketing per customer, the number of times the customer visited the platform, the purchase amounts of each customer and each customers sign-up dates. The customers are classified into segments (Consumer, SMB, Enterprise) to reflect different market types and the notes provides information about each customer's marketing interactions.
 
 
-```{r}
+```{r, echo = FALSE, include = FALSE}
 # Read in the raw .csv data file
 raw_customer_data <- read.csv("data/37300458_Phoebe Zhang.csv")
 
