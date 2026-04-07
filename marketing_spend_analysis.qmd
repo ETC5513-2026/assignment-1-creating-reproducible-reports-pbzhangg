@@ -17,6 +17,14 @@ The dataset records customer-level data from a personalised marketing campaign. 
 
 
 ```{r}
-# Read in the csv data file
+# Read in the raw .csv data file
 raw_customer_data <- read.csv("data/37300458_Phoebe Zhang.csv")
+
+# Explore the raw data
+head(raw_customer_data)
+summary(raw_customer_data)
+
+# Convert all "N/A" and empty null values in the raw data to NA
+raw_customer_data[raw_customer_data == "N/A"] <- NA
+raw_customer_data[raw_customer_data == ""] <- NA
 ```
