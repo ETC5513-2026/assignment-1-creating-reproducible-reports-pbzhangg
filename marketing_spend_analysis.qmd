@@ -87,3 +87,16 @@ ggplot(clean_customer_data, aes(x = segment)) +
 [@fig-custs-per-segment] is a bar chart which shows that the observations in this data mostly consists of Consumer customers, where Enterprise customers contribute the least to this data.
 
 [@fig-custs-per-segment] shows how the customers are distributed across the different segments (Consumer, SMB, Enterprise), and provides background on which segments contribute most to this data. This can prove useful later on if the marketing team would like to analyse marketing spend based on each different segment.
+
+# Results
+```{r}
+#| label: fig-market-cust-plot
+#| fig-cap: "Marketing spend per customer, against each customer's purchase amount in dollars ($)"
+
+ggplot(clean_customer_data, aes(x = marketing_spend, y = purchase_amount)) +
+    geom_point() +
+    labs(x = "Marketing Spend ($)", 
+         y = "Customer Purchase Amount ($)",
+         title = "Marketing Spend against Customer Purchase Amount" ) +
+    theme_minimal()
+```
