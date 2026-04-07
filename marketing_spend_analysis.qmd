@@ -6,6 +6,12 @@ format:
    pdf:
 ---
 
+```{r, echo = FALSE, warning = FALSE, message = FALSE}
+# Load required libraries
+library(tidyverse)
+library(datefixR)
+```
+
 # Introduction
 This report investigates if increased personalised marketing campaign spend per customer leads to higher purchase amounts. Understanding this relationship between marketing spend and customer purchase amounts is crucial for evaluating the effectiveness of investment on marketing efforts. The findings from this report can inform future budget allocations around marketing strategies.
 
@@ -27,4 +33,9 @@ summary(raw_customer_data)
 # Convert all "N/A" and empty null values in the raw data to NA
 raw_customer_data[raw_customer_data == "N/A"] <- NA
 raw_customer_data[raw_customer_data == ""] <- NA
+
+clean_customer_data <- raw_customer_data %>%
+    mutate(
+        # Standardise signup_date formats
+        signup_date = fix_date_char(signup_date))
 ```
