@@ -9,7 +9,8 @@ format:
 ```{r, echo = FALSE, warning = FALSE, message = FALSE}
 # Load required libraries
 library(tidyverse)
-library(vtable)
+library(datefixR)
+library(knitr)
 library(ggplot2)
 ```
 
@@ -20,7 +21,7 @@ This report investigates if increased personalised marketing campaign spend per 
 This report aims to investigate whether increased marketing spend per customer leads to higher purchase amounts. The relationship between these two variables will be analysed by utilising customer-level data from a personalised marketing campaign, including marketing spend and recorded customer purchase amounts.
 
 # Dataset Introduction
-The dataset contains records of customer-level data from a personalised marketing campaign. The dataset consists of a unique identifier for each customer, the amount spent on marketing per customer, and the purchase amounts of each customer. The customers are classified into segments (Consumer, SMB, Enterprise) to reflect different market types.
+The dataset contains records of customer-level data from a personalised marketing campaign, showing how much was spent on marketing for each customer (`marketing_spend`) and the customer's corresponding purchase amount (`purchase_amount`). The dataset also contains information on the customer's sign-up date, id, number of visits, segment, and associated notes.
 
 ```{r, echo = FALSE, include = FALSE}
 # Read in the raw .csv data file
@@ -36,64 +37,74 @@ raw_customer_data[raw_customer_data == ""] <- NA
 
 clean_customer_data <- raw_customer_data %>%
     mutate(
-        # Convert segment variable to factor to represent categorical data
-        segment = as.factor(segment)
+        # Standardise signup_date formats
+        signup_date = fix_date_char(signup_date),
+        
+         # Convert variables to factor to represent categorical data
+        segment = as.factor(segment),
+        notes = as.factor(notes)
     ) %>%
-    # Filter out NA purchase_amounts
-    filter(!is.na(purchase_amount)) %>%
-    # Filter out notes, signup_date and visits columns
-    select(-notes, -signup_date, -visits)
+    # Filter out NA purchase_amounts and marketing_spend rows
+    filter(
+        !is.na(purchase_amount),
+        !is.na(marketing_spend)
+    )
 ```
 
 ## Cleaning Process
-The raw dataset contained lots of "N/A" and empty null values; these were converted to *NA* to ensure consistency across variables. The categorical variable, `segment`, was converted into a factor type to properly represent its categorical nature. Rows with missing customer purchase amount values were removed from the dataset as unknown purchase amounts would not be useful for this analysis. The `notes` variable was filtered out as it was unstructured and sparse, and is not essential for answering the main research question. The `signup_date` and `visits` variables were also filtered out as they were not necessary for answering the main research question. The cleaning process ensures that the final dataset is consistent and complete for meaningful statistical analysis of the relationship between marketing spend and customer purchase amounts.
+The raw dataset contained lots of N/A and empty NULL values; these were converted to *NA* to ensure consistency across variables. Inconsistent date formats were standardised into a consistent date format across all rows. Categorical variables, such as `segment` and `notes`, were converted to factor types to properly represent their categorical nature. Rows with missing marketing spend and customer purchase amount values were removed as these unknown values would not be useful for the analysis. The cleaning process ensures that the final dataset is consistent and complete for meaningful statistical analysis of the relationship between marketing spend and customer purchase amounts.
 
 ## Dataset Description
 The processed dataset contains:
 
 * `customer_id`: a unique customer identifier
 * `marketing_spend`: a numeric variable representing the amount spent on the marketing for the given customer
+* `visit`: a numeric variable representing the number of times the given customer visited the platform
 * `purchase_amount`: a numeric variable representing the amount spent by the customer
+* `signup_date`: a date variable representing the date the customer signed up to the platform
 * `segment`: a categorical variable classifying the customer as a Consumer, SMB, or Enterprise
+* `notes`: a categorical variable representing customer response to marketing outreach
 
 There are `r ncol(clean_customer_data)` variables and `r nrow(clean_customer_data)` observations in the cleaned dataset.
 ```{r}
-#| label: tbl-summary-stats
-#| tbl-cap: "Summary statistics of numeric variables (marketing spend, purchase amount) in the dataset"
+#| label: tbl-average-stats
+#| tbl-cap: "Averages of numeric variables (marketing spend, visits, purchase amount) in each customer segment (Consumer, Enterprise, SMB)"
 
-# Get summary statistics of the numeric variables
+# Get averages of numeric variables grouped by customer segments
 clean_customer_data %>%
-    select(marketing_spend, purchase_amount) %>%
-    sumtable(title = NA)
+    group_by(segment) %>%
+    summarise(
+        customer_count = n(),
+        avg_marketing_spend = mean(marketing_spend),
+        avg_purchase_amount = mean(purchase_amount),
+        avg_visits = mean(visits)
+    ) %>%
+    kable(digits = 2)
 ```
 
-[@tbl-summary-stats] shows the summary statistics of the numeric variables in the dataset. From [@tbl-summary-stats], it appears that the variables, `marketing_spend` and `purchase_amount`, are highly variable, with ranges spanning from $1.8 to $297 and $0 to $307, respectively, which will allow the analysis to capture the extremes of the relationship between the two variables. The average amount spent on marketing per customer is $148, with most marketing campaigns spending between $74 and $215, and the average customer purchase amount is $135, with most customers spending between $76 and $199.
-
-[@tbl-summary-stats] provides insights on the distribution of the numeric variables of the data, showing average values, ranges and potential outliers, which can be useful for the interpretation of results later on in the analysis.
+[@tbl-average-stats] provides a summary of customer characteristics across different segments, offering insight on how marketing spend and customer purchase behaviour varies across different customer segments. From [@tbl-average-stats], it appears that Enterprise customers had the highest average platform visits and return for marketing spend, with an average marketing spend of $109.13 and an average purchase amount of $106.38.
 
 ```{r}
 #| label: fig-custs-per-segment
-#| fig-cap: "Number of customers in each different segment (Consumer, Enterprise, SMB) in the data"
+#| fig-cap: "Number of customers in each different segment (Consumer, Enterprise, SMB)"
 
 # Plot the count of customers in each segment as a bar chart
-ggplot(clean_customer_data, aes(x = segment)) +
+ggplot(clean_customer_data, aes(x = segment, fill = segment)) +
     geom_bar() +
     labs(x = "Segment",
-         y = "Count of Customers",
-         title = "Count of Customers by segment") +
+         y = "Number of Customers",
+         title = "Count of Customers by Segment") +
     theme_minimal()
 ```
 
-[@fig-custs-per-segment] is a bar chart which shows that the observations in this data mostly consists of Consumer customers, where Enterprise customers contribute the least to this data.
-
-[@fig-custs-per-segment] shows how the customers are distributed across the different segments (Consumer, SMB, Enterprise), and provides background on which segments contribute most to this data. This can prove useful later on if the marketing team would like to analyse marketing spend based on each different customer segment.
+[@fig-custs-per-segment] shows how the customers are distributed across segments (Consumer, SMB, Enterprise), and provides background on which segments contribute most to the dataset. From [@fig-custs-per-segment], it appears that the observations in the dataset mostly consist of Consumer customers, and Enterprise customers contribute the least records to the dataset. This can prove useful later on if the marketing team would like to analyse marketing spend based on each different customer segment. 
 
 # Results
 ```{r}
 #| label: fig-market-cust-plot
-#| fig-cap: "Marketing spend per customer, against each customer's purchase amount in dollars ($)"
+#| fig-cap: "Marketing spend per customer, against each customer's purchase amount in dollars"
 
-ggplot(clean_customer_data, aes(x = marketing_spend, y = purchase_amount, color = segment)) +
+ggplot(clean_customer_data, aes(x = marketing_spend, y = purchase_amount)) +
     geom_point() +
     labs(x = "Marketing Spend ($)", 
          y = "Customer Purchase Amount ($)",
@@ -101,6 +112,20 @@ ggplot(clean_customer_data, aes(x = marketing_spend, y = purchase_amount, color 
     theme_minimal()
 ```
 
-[@fig-market-cust-plot] shows that there is a strong positive relationship between marketing spend and customer purchase amount. As marketing spend increases, customer purchase amount also tends to increase. There is some variability in the data shown by the dispersion of the points on the plot, but the overall trend is positive. At lower marketing spend on personalised campaigns, most customers make no purchase, or the purchase amount is small. At higher amounts of money spent on personalised marketing campaigns, customer purchases tend to be generally higher. This suggests that higher marketing spend per customer does lead to higher purchase amounts. 
+[@fig-market-cust-plot] shows that there is a strong positive relationship between marketing spend and customer purchase amount. As marketing spend increases, customer purchase amount also tends to increase. There is some variability in the data shown by the dispersion of the points on the plot, but the overall trend is positive. At lower marketing spend on personalised campaigns, most customers make no purchase, or the purchase amount is small. At higher amounts spent on personalised marketing campaigns, customer purchases tend to be generally higher. This suggests that higher marketing spend per customer does lead to higher purchase amounts. 
 
-Customers with marketing spend amounts below $50 had an average purchase amount of $`r round(mean(clean_customer_data$purchase_amount[clean_customer_data$purchase_amount < 50]), 2)`, whereas customers with marketing spend amounts above $250 had an average purchase amount of $`r round(mean(clean_customer_data$purchase_amount[clean_customer_data$purchase_amount > 250]), 2)`, showing that there is a general upward trend between the two variables. The correlation between marketing spend and customer purchase amount is `r round(cor(clean_customer_data$marketing_spend, clean_customer_data$purchase_amount), 2)`. This correlation coefficient is positive and close to 1, indicating a strong positive relationship between the two variables. These statistics further support the conclusion that higher marketing spend per customer leads to higher purchase amounts.
+Customers with marketing spend below $50 had an average purchase amount of $`r round(mean(clean_customer_data$purchase_amount[clean_customer_data$purchase_amount < 50]), 2)`, whereas customers with marketing spend above $250 had an average purchase amount of $`r round(mean(clean_customer_data$purchase_amount[clean_customer_data$purchase_amount > 250]), 2)`, showing that there is a general upward trend between the two variables. The correlation between marketing spend and customer purchase amount is `r round(cor(clean_customer_data$marketing_spend, clean_customer_data$purchase_amount), 2)`. This correlation coefficient is positive and close to 1, indicating a strong positive relationship between the two variables. These statistics further support the conclusion that higher marketing spend per customer leads to higher purchase amounts.
+
+```{r, message=FALSE}
+#| label: fig-by-segment-plot
+#| fig-cap: "Marketing spend against purchase amount for each customer in dollars ($) by segment"
+
+# Plot marketing spend against purchase amount by segment
+ggplot(clean_customer_data, aes(x = marketing_spend, y = purchase_amount, color = segment)) +
+    geom_point() +
+    geom_smooth(method = "lm", se = FALSE) +
+    facet_wrap(~segment) +
+    theme_minimal()
+```
+
+[@fig-by-segment-plot] displays marketing spend against purchase amount for each customer by segment (Consumer, Enterprise, SMB). In all 3 segments, the relationship between marketing spend and purchase amount is positive, suggesting that higher marketing spend generally leads to higher customer purchase amounts across all 3 segments. The spread and slope of the data varies across the 3 segments, with Consumer and SMB customers capturing a wider range of customer purchase amounts at higher marketing spend levels, while Enterprise customers captures a much smaller range due to fewer observations. The plot indicates that increased marketing spend tends to lead to higher purchase amounts, regardless of customer segments.
