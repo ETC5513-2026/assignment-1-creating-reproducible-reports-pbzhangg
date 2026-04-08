@@ -4,6 +4,7 @@ author: "Phoebe Zhang"
 format: 
   html: default
   pdf: default
+geometry: margin = 1in
 ---
 
 ```{r, echo = FALSE, warning = FALSE, message = FALSE}
@@ -25,7 +26,7 @@ The dataset contains records of customer-level data from a personalised marketin
 
 ```{r, echo = FALSE, include = FALSE}
 # Read in the raw .csv data file
-raw_customer_data <- read.csv("data/37300458_Phoebe Zhang.csv")
+raw_customer_data <- read_csv("data/37300458_Phoebe Zhang.csv")
 
 # Explore the raw data
 head(raw_customer_data)
@@ -40,11 +41,11 @@ clean_customer_data <- raw_customer_data %>%
         # Standardise signup_date formats
         signup_date = fix_date_char(signup_date),
         
-         # Convert variables to factor to represent categorical data
+        # Convert variables to factor to represent categorical data
         segment = as.factor(segment),
         notes = as.factor(notes)
     ) %>%
-    # Filter out NA purchase_amounts and marketing_spend rows
+    # Filter out rows with missing purchase_amounts and marketing_spend
     filter(
         !is.na(purchase_amount),
         !is.na(marketing_spend)
@@ -91,9 +92,11 @@ clean_customer_data %>%
 # Plot the count of customers in each segment as a bar chart
 ggplot(clean_customer_data, aes(x = segment, fill = segment)) +
     geom_bar() +
-    labs(x = "Segment",
-         y = "Number of Customers",
-         title = "Count of Customers by Segment") +
+    labs(
+        x = "Segment",
+        y = "Number of Customers",
+        title = "Count of Customers by Segment"
+    ) +
     theme_minimal()
 ```
 
@@ -106,9 +109,11 @@ ggplot(clean_customer_data, aes(x = segment, fill = segment)) +
 
 ggplot(clean_customer_data, aes(x = marketing_spend, y = purchase_amount)) +
     geom_point() +
-    labs(x = "Marketing Spend ($)", 
-         y = "Customer Purchase Amount ($)",
-         title = "Marketing Spend against Customer Purchase Amount" ) +
+    labs(
+        x = "Marketing Spend ($)", 
+        y = "Customer Purchase Amount ($)",
+        title = "Marketing Spend against Customer Purchase Amount"
+    ) +
     theme_minimal()
 ```
 
@@ -121,7 +126,14 @@ Customers with marketing spend below $50 had an average purchase amount of $`r r
 #| fig-cap: "Marketing spend against purchase amount for each customer in dollars ($) by segment"
 
 # Plot marketing spend against purchase amount by segment
-ggplot(clean_customer_data, aes(x = marketing_spend, y = purchase_amount, color = segment)) +
+ggplot(
+    clean_customer_data, 
+    aes(
+        x = marketing_spend, 
+        y = purchase_amount, 
+        color = segment
+    )
+) + 
     geom_point() +
     geom_smooth(method = "lm", se = FALSE) +
     facet_wrap(~segment) +
