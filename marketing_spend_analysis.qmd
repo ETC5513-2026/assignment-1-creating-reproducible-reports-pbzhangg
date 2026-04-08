@@ -21,7 +21,7 @@ This report investigates if increased personalised marketing campaign spend per 
 This report aims to investigate whether increased marketing spend per customer leads to higher purchase amounts. The relationship between these two variables will be analysed by utilising customer-level data from a personalised marketing campaign, including marketing spend and recorded customer purchase amounts.
 
 # Dataset Introduction
-The dataset contains records of customer-level data from a personalised marketing campaign. The dataset consists of amount spent on marketing per customer, the number of times the customer visited the platform, the purchase amounts of each customer and each customer's sign-up dates. The customers are classified into segments (Consumer, SMB, Enterprise) to reflect different market types and the notes variable provides information about each customer's marketing interactions.
+The dataset contains records of customer-level data from a personalised marketing campaign. The dataset consists of amount spent on marketing per customer, the number of times the customer visited the platform, the purchase amounts of each customer and each customer's sign-up dates. The customers are classified into segments (Consumer, SMB, Enterprise) to reflect different market types and the `notes` variable provides information about each customer's marketing interactions.
 
 ```{r, echo = FALSE, include = FALSE}
 # Read in the raw .csv data file
@@ -45,22 +45,24 @@ clean_customer_data <- raw_customer_data %>%
         notes = as.factor(notes)
     ) %>%
     # Filter out NA purchase_amounts
-    filter(!is.na(purchase_amount))
+    filter(!is.na(purchase_amount)) %>%
+    # Drop notes and signup_date columns
+    select(-notes, -signup_date)
 ```
 
 ## Cleaning Process
-The raw dataset contained lots of "N/A" and empty null values; these were converted to *NA* to ensure consistency across variables. The raw dataset also contained inconsistent date formats; these were standardised and converted into a consistent date format across all rows. Categorical variables, such as segment and notes, were converted to factor types to properly represent their categorical nature. Rows with missing customer purchase amount values were removed from the dataset as unknown purchase amounts would not be useful for this analysis. The cleaning process ensures that the final dataset is consistent and complete for meaningful statistical analysis of the relationship between marketing spend and customer purchase amounts.
+The raw dataset contained lots of "N/A" and empty null values; these were converted to *NA* to ensure consistency across variables. The raw dataset also contained inconsistent date formats; these were standardised and converted into a consistent date format across all rows. Categorical variables, such as `segment` and `notes`, were converted to factor types to properly represent their categorical nature. Rows with missing customer purchase amount values were removed from the dataset as unknown purchase amounts would not be useful for this analysis. The cleaning process ensures that the final dataset is consistent and complete for meaningful statistical analysis of the relationship between marketing spend and customer purchase amounts.
 
 ## Dataset Description
 The processed dataset contains:
 
-* customer_id: a unique customer identifier
-* marketing_spend: a numeric variable representing the amount spent on the marketing for the given customer
-* visit: a numeric variable representing the number of times the given customer visited the platform
-* purchase_amount: a numeric variable representing the amount spent by the customer
-* signup_date: a date variable representing the date the customer signed up to the platform
-* segment: a categorical variable classifying the customer as a Consumer, SMB, or Enterprise
-* notes: a categorical variable representing customer response to marketing outreach
+* `customer_id`: a unique customer identifier
+* `marketing_spend`: a numeric variable representing the amount spent on the marketing for the given customer
+* `visit`: a numeric variable representing the number of times the given customer visited the platform
+* `purchase_amount`: a numeric variable representing the amount spent by the customer
+* `signup_date`: a date variable representing the date the customer signed up to the platform
+* `segment`: a categorical variable classifying the customer as a Consumer, SMB, or Enterprise
+* `notes`: a categorical variable representing customer response to marketing outreach
 
 There are `r ncol(clean_customer_data)` variables and `r nrow(clean_customer_data)` observations in the cleaned dataset.
 ```{r}
@@ -73,7 +75,7 @@ clean_customer_data %>%
     sumtable(title = NA)
 ```
 
-[@tbl-summary-stats] shows the summary statistics of the numeric variables in the dataset. From [@tbl-summary-stats], it appears that the variables, marketing_spend and purchase_amount, are highly variable, with ranges spanning from $1.8 to $297 and $0 to $307, respectively, which will allow the analysis to capture the extremes of the relationship between the two variables. The average amount spent on marketing per customer is $148, with most marketing campaigns spending between $74 and $215, and the average customer purchase amount is $135, with most customers spending between $76 and $199. The visits variable shows less variability with a mean of 6.1 and most customers visiting the platform between 4 to 8 times.
+[@tbl-summary-stats] shows the summary statistics of the numeric variables in the dataset. From [@tbl-summary-stats], it appears that the variables, `marketing_spend` and `purchase_amount`, are highly variable, with ranges spanning from $1.8 to $297 and $0 to $307, respectively, which will allow the analysis to capture the extremes of the relationship between the two variables. The average amount spent on marketing per customer is $148, with most marketing campaigns spending between $74 and $215, and the average customer purchase amount is $135, with most customers spending between $76 and $199. The `visits` variable shows less variability with a mean of 6.1 and most customers visiting the platform between 4 to 8 times.
 
 [@tbl-summary-stats] provides insights on the distribution of the numeric variables of the data, showing average values, ranges and potential outliers, which can be useful for the interpretation of results later on in the analysis.
 
